@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model implements JWTSubject
+class User extends Authenticatable implements JWTSubject
 {
-    use Authenticatable,HasFactory, HasUuids;
+    use HasFactory, HasUuids;
 
-    protected $fillable = ['name', 'email', 'password', 'password_salt'];
+    protected $fillable = [
+        'name', 'email', 'password', 'password_salt'
+    ];
 
     protected $hidden = ['password'];
 
