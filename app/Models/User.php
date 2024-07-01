@@ -2,12 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * Class User
+ *
+ * @package App
+ * @mixin Builder
+ * @mixin Model
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, HasUuids;
@@ -16,7 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'name', 'email', 'password', 'password_salt'
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = ['user_id','password', 'password_salt', 'email_verified_at', 'remember_token'];
 
     protected $table = 'users';
     protected $keyType = 'string';

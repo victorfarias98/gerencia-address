@@ -2,66 +2,102 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
+use App\Services\Interfaces\UserServiceInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Mockery\Exception;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(private readonly UserServiceInterface $userService)
     {
-        //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show(): JsonResponse
     {
-        //
+        try {
+            $user = $this->userService->findById(Auth::user()->user_id);
+
+            return response()->json([
+                'user' => $user,
+            ], ResponseAlias::HTTP_OK);
+        } catch (Exception $exception){
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ], ResponseAlias::HTTP_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        //
+        try {
+            $user = $this->userService->create($request->validated());
+
+            $token = Auth::login($user);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                'user' => $user,
+                'authorization' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ], ResponseAlias::HTTP_CREATED);
+        } catch (Exception $exception){
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ], ResponseAlias::HTTP_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function update(User $user, UpdateUserRequest $request): JsonResponse
     {
-        //
+        try {
+            $user = $this->userService->update($user->user_id, $request->validated());
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User updated successfully',
+                'user' => $user,
+            ], ResponseAlias::HTTP_OK);
+        } catch (Exception $exception){
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ], ResponseAlias::HTTP_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
+    public function destroy(User $user): JsonResponse
     {
-        //
-    }
+        try {
+            $response = $this->userService->delete($user->user_id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
-    {
-        //
-    }
+            if(! $response){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User not deleted, try again later',
+                ], ResponseAlias::HTTP_BAD_REQUEST);
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User deleted successfully',
+            ], ResponseAlias::HTTP_OK);
+        } catch (Exception $exception){
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ], ResponseAlias::HTTP_BAD_REQUEST);
+        }
     }
 }
+
