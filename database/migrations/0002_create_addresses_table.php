@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('address_id')->primary();
             $table->foreignUuid('user_id');
             $table->string('street');
+            $table->string('number');
+            $table->string('complement')->nullable();
             $table->string('city');
             $table->string('state');
             $table->string('country');

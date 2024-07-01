@@ -20,8 +20,9 @@ class StoreAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|uuid|exists:users,user_id',
             'street' => 'required|string|max:255',
+            'number' => 'required|string|max:6',
+            'complement' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'country' => 'required|string|max:255',

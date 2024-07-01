@@ -20,7 +20,7 @@ class Address extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'user_id', 'street', 'city', 'state', 'country', 'postal_code'
+        'user_id', 'street','number','complement', 'city', 'state', 'country', 'postal_code'
     ];
 
     protected $hidden = ['address_id', 'user_id'];

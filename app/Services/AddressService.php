@@ -11,11 +11,9 @@ readonly class AddressService implements AddressServiceInterface
     {
     }
 
-    public function create(array $data): array
+    public function create(string $userId, array $data): array
     {
-        $address = $this->addressRepository->create($data);
-
-        return $address->toArray();
+        return $this->addressRepository->create($userId, $data);
     }
 
     public function getById(string $addressId): array
@@ -23,20 +21,18 @@ readonly class AddressService implements AddressServiceInterface
         return $this->addressRepository->findById($addressId);
     }
 
-    public function update(string $addressId, array $data): bool
+    public function update(string $userId, string $addressId, array $data): bool
     {
-        return $this->addressRepository->update($addressId, $data);
+        return $this->addressRepository->update($userId, $addressId, $data);
     }
 
-    public function delete(string $addressId): bool
+    public function delete(string $userId, string $addressId): bool
     {
-       return $this->addressRepository->delete($addressId);
+       return $this->addressRepository->delete($userId, $addressId);
     }
 
-    public function getUserId(string $userId): array
+    public function getByUserId(string $userId): array
     {
-        $address = $this->addressRepository->findByUserId($userId);
-
-        return $address->toArray();
+        return $this->addressRepository->findByUserId($userId);
     }
 }
